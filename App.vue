@@ -24,15 +24,24 @@
         :height="15"
         @move="onMoveHScroll"
       />
+      <Scroller
+        :min="-500"
+        :max="500"
+        :start="view.y"
+        :end="30"
+        :x="400-15"
+        :y="0"
+        :width="15"
+        :height="400"
+        :vertical="true"
+        @move="onMoveVScroll"
+      />
     </svg>
     <Pallete :selected-color="selectedColor" @select="onSelectColor"></Pallete>
 
     <p>
-      <input type="range" v-model.number="view.x" min="-500" max="500" />
-      <input type="range" v-model.number="view.y" min="-500" max="500" />
       <input type="range" v-model.number="view.scale" min="0" max="10" step="0.1" />
     </p>
-    <p v-if="offset">{{offset.x}} {{offset.y}}</p>
   </div>
 </template>
 <style>
@@ -179,6 +188,9 @@ export default {
     },
     onMoveHScroll(value) {
       this.view.x = value;
+    },
+    onMoveVScroll(value) {
+      this.view.y = value;
     }
   },
   mounted() {

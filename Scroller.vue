@@ -1,7 +1,8 @@
 <template>
   <g :transform="transform" class="comp">
-    <rect class="backdrop" x="0" y="0" :width="width" :height="height" />
+    <rect v-if="!vertical" class="backdrop" x="0" y="0" :width="width" :height="height" />
     <rect
+      v-if="!vertical"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
       @pointerup="onPointerUp"
@@ -9,6 +10,21 @@
       y="0"
       width="20"
       :height="height"
+      fill="#333"
+      rx="2"
+      ry="2"
+    />
+    <!-- vertical -->
+    <rect v-if="vertical" class="backdrop" x="0" y="0" :width="width" :height="height" />
+    <rect
+      v-if="vertical"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="onPointerUp"
+      :y="handle"
+      x="0"
+      height="20"
+      :width="height"
       fill="#333"
       rx="2"
       ry="2"
@@ -32,7 +48,17 @@ function hypot(x, y) {
 }
 
 export default {
-  props: ["min", "max", "start", "end", "x", "y", "height", "width"],
+  props: [
+    "min",
+    "max",
+    "start",
+    "end",
+    "x",
+    "y",
+    "height",
+    "width",
+    "vertical"
+  ],
   data() {
     return {
       offset: null,
@@ -52,9 +78,15 @@ export default {
     },
     onPointerMove(e) {
       if (this.offset) {
-        const diff = e.offsetX - this.offset.x;
-        const start = (diff * this.length) / this.width + this.old.start;
-        this.$emit("move", start);
+        if (this.vertical) {
+          const diff = e.offsetY - this.offset.y;
+          const start = (diff * this.length) / this.height + this.old.start;
+          this.$emit("move", start);
+        } else {
+          const diff = e.offsetX - this.offset.x;
+          const start = (diff * this.length) / this.width + this.old.start;
+          this.$emit("move", start);
+        }
       }
     },
     onPointerUp() {
@@ -69,7 +101,11 @@ export default {
       return this.max - this.min;
     },
     handle() {
-      return ((this.start - this.min) / this.length) * this.width;
+      if (this.vertical) {
+        return ((this.start - this.min) / this.length) * this.height;
+      } else {
+        return ((this.start - this.min) / this.length) * this.width;
+      }
     }
   }
 };
