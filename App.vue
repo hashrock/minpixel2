@@ -13,12 +13,23 @@
           height="200"
         />
       </g>
+      <Scroller
+        :min="-500"
+        :max="500"
+        :start="view.x"
+        :end="30"
+        :x="0"
+        :y="400-15"
+        :width="400"
+        :height="15"
+        @move="onMoveHScroll"
+      />
     </svg>
     <Pallete :selected-color="selectedColor" @select="onSelectColor"></Pallete>
 
     <p>
-      <input type="range" v-model.number="view.x" min="-1000" max="1000" />
-      <input type="range" v-model.number="view.y" min="-1000" max="1000" />
+      <input type="range" v-model.number="view.x" min="-500" max="500" />
+      <input type="range" v-model.number="view.y" min="-500" max="500" />
       <input type="range" v-model.number="view.scale" min="0" max="10" step="0.1" />
     </p>
     <p v-if="offset">{{offset.x}} {{offset.y}}</p>
@@ -41,6 +52,7 @@ body {
 </style>
 <script>
 import Pallete from "./Pallete.vue";
+import Scroller from "./Scroller.vue";
 
 const canvas = document.createElement("canvas");
 canvas.width = 200;
@@ -81,7 +93,9 @@ export default {
   },
   computed: {
     transformString() {
-      return `translate(${this.view.x}, ${this.view.y}) scale(${this.view.scale})`;
+      return `translate(${-1 * this.view.x}, ${-1 * this.view.y}) scale(${
+        this.view.scale
+      })`;
     }
   },
   methods: {
@@ -162,6 +176,9 @@ export default {
     },
     onSelectColor(color) {
       this.selectedColor = color;
+    },
+    onMoveHScroll(value) {
+      this.view.x = value;
     }
   },
   mounted() {
@@ -175,7 +192,8 @@ export default {
     this.redraw();
   },
   components: {
-    Pallete
+    Pallete,
+    Scroller
   }
 };
 </script>
